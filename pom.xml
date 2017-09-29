@@ -30,21 +30,11 @@
         <druid.version>1.1.2</druid.version>
         <commons-lang3.version>3.5</commons-lang3.version>
         <javax.servlet-api.version>4.0.0-b07</javax.servlet-api.version>
-        <pagehelper.version>3.6.3</pagehelper.version>
         <httpclient.version>4.5.3</httpclient.version>
         <spring.version>4.3.8.RELEASE</spring.version>
         <maven-resources-plugin.version>3.0.2</maven-resources-plugin.version>
         <logback.version>1.2.3</logback.version>
         <slf4j.version>1.7.22</slf4j.version>
-        <quartz.version>2.3.0</quartz.version>
-        <javax.mail.version>1.6.0</javax.mail.version>
-        <spring-boot-starter-redis.version>1.4.7.RELEASE</spring-boot-starter-redis.version>
-        <jedis.version>2.9.0</jedis.version>
-        <rocketmq.version>4.1.0-incubating</rocketmq.version>
-        <spring-kafka.version>1.1.6.RELEASE</spring-kafka.version>
-        <webmagic.version>0.7.3</webmagic.version>
-        <jsoup.version>1.10.3</jsoup.version>
-        <shiro.version>1.2.5</shiro.version>
     </properties>
 
     <dependencies>
@@ -154,27 +144,9 @@
             <version>4.0.2</version>
         </dependency>
 
-        <!-- quartz -->
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz</artifactId>
-            <version>${quartz.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
-        </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.quartz-scheduler</groupId>-->
-            <!--<artifactId>quartz</artifactId>-->
-            <!--<version>2.2.3</version>-->
-        <!--</dependency>-->
-
-        <!-- email -->
-        <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>javax.mail</artifactId>
-            <version>${javax.mail.version}</version>
         </dependency>
 
         <!-- json -->
@@ -199,77 +171,6 @@
             <version>${jackson.mapperasl.version}</version>
         </dependency>
 
-        <!-- redis  -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-redis</artifactId>
-            <version>${spring-boot-starter-redis.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-            <version>${jedis.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-commons-core</artifactId>
-            <version>1.4.1.RELEASE</version>
-        </dependency>
-
-        <!-- kafka -->
-        <dependency>
-            <groupId>org.springframework.kafka</groupId>
-            <artifactId>spring-kafka</artifactId>
-            <version>${spring-kafka.version}</version>
-        </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.apache.kafka</groupId>-->
-            <!--<artifactId>kafka-clients</artifactId>-->
-            <!--<version>0.8.2.2</version>-->
-        <!--</dependency>-->
-
-        <!-- RocketMq客户端相关依赖 -->
-        <dependency>
-            <groupId>org.apache.rocketmq</groupId>
-            <artifactId>rocketmq-client</artifactId>
-            <version>${rocketmq.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.rocketmq</groupId>
-            <artifactId>rocketmq-common</artifactId>
-            <version>${rocketmq.version}</version>
-        </dependency>
-
-        <!-- jsoup html parse -->
-        <dependency>
-            <groupId>org.jsoup</groupId>
-            <artifactId>jsoup</artifactId>
-            <version>${jsoup.version}</version>
-        </dependency>
-
-        <!-- shiro -->
-        <dependency>
-            <groupId>org.apache.shiro</groupId>
-            <artifactId>shiro-core</artifactId>
-            <version>${shiro.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shiro</groupId>
-            <artifactId>shiro-web</artifactId>
-            <version>${shiro.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shiro</groupId>
-            <artifactId>shiro-ehcache</artifactId>
-            <version>${shiro.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shiro</groupId>
-            <artifactId>shiro-spring</artifactId>
-            <version>${shiro.version}</version>
-        </dependency>
-
-        <!-- -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>

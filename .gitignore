@@ -1,0 +1,7 @@
+# Created by .ignore support plugin (hsz.mobi)
+.idea/*
+target/*
+/data/*
+*.iml
+**.iml
+*/target/*
