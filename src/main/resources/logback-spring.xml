@@ -25,13 +25,9 @@
         </encoder>
     </appender>
 
-    <appender name="LOGSTASH" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <charset>utf8</charset>
-        </encoder>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logstash/logstash-%d{yyyy-MM-dd}.log</fileNamePattern>
-        </rollingPolicy>
+    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>192.168.1.50:5000</destination>
+        <encoder charset="UTF-8" class="net.logstash.logback.encoder.LogstashEncoder" />
     </appender>
 
     <!-- show sql -->
@@ -40,9 +36,10 @@
     <!--</logger>-->
 
     <!-- 日志输出级别 -->
-    <root level="${logback.log.level}">
+    <root level="info">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
+        <appender-ref ref="LOGSTASH" />
+        <!--<appender-ref ref="FILE" />-->
     </root>
 
 </configuration>
