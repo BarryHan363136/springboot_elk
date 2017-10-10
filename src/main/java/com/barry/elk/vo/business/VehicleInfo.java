@@ -7,6 +7,8 @@ public class VehicleInfo implements Serializable {
 
     private static final long serialVersionUID = 1648319017135003624L;
 
+    private String id;
+
     /** boss 系统公司编号 */
     private String groupId;
 
@@ -78,6 +80,14 @@ public class VehicleInfo implements Serializable {
 
     /** 销售合同编号 */
     private String saleBillNo;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getGroupId() {
         return groupId;
