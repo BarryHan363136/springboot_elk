@@ -1,12 +1,10 @@
 package com.barry.elk.service;
 
 import com.alibaba.fastjson.JSON;
-import com.barry.elk.base.BaseTest;
 import com.barry.elk.vo.business.VehicleInfo;
 import org.apache.http.HttpHost;
 import org.elasticsearch.Build;
 import org.elasticsearch.Version;
-import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
@@ -19,7 +17,6 @@ import org.elasticsearch.action.main.MainResponse;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.cluster.ClusterName;
-import org.elasticsearch.common.xcontent.XContentType;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -133,7 +130,7 @@ public class ESQueryServiceTest {
         try {
             RestClient lowLevelRestClient = RestClient.builder(new HttpHost("192.168.1.50", 9200, "http")).build();
             RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
-            DeleteRequest request = new DeleteRequest(index, driverType, "AV8JYB_YeAOg1SSRhtWM");
+            DeleteRequest request = new DeleteRequest(index, driverType, "AV8Kj_NNeAOg1SSRhtWX");
             DeleteResponse deleteResponse = client.delete(request);
             logger.info("==============>testSingleDelete:"+JSON.toJSONString(deleteResponse));
         } catch (IOException e) {
