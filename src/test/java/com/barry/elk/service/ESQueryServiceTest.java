@@ -43,7 +43,7 @@ public class ESQueryServiceTest {
     private static final String ip = "192.168.1.50";
     private static final Integer port = 9003;
     private static String index = "driver_service";
-    private static String driverType = "driver";
+    private static String driverType = "vehicle";
     private static String customerType = "customer";
     private static String idName = "";
     private VehicleInfo vehicleInfo = new VehicleInfo();
@@ -134,7 +134,7 @@ public class ESQueryServiceTest {
         try {
             RestClient lowLevelRestClient = RestClient.builder(new HttpHost("192.168.1.50", 9200, "http")).build();
             RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
-            DeleteRequest request = new DeleteRequest(index, driverType, "AV8JQqkgeAOg1SSRhtWK");
+            DeleteRequest request = new DeleteRequest(index, driverType, "001-003");
             DeleteResponse deleteResponse = client.delete(request);
             logger.info("==============>testSingleDelete:"+JSON.toJSONString(deleteResponse));
         } catch (IOException e) {
