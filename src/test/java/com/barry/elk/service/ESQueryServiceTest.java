@@ -8,18 +8,16 @@ import org.elasticsearch.Build;
 import org.elasticsearch.Version;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.main.MainResponse;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.ClusterName;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,8 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -40,7 +36,7 @@ import java.util.List;
  * @create: 2017/10/10 14:52
  * desc:
  */
-public class ESQueryServiceTest extends BaseTest {
+public class ESQueryServiceTest {
 
     private static final Logger logger = LoggerFactory.getLogger(ESQueryServiceTest.class);
 
@@ -50,8 +46,8 @@ public class ESQueryServiceTest extends BaseTest {
     private static String driverType = "driver";
     private static String customerType = "customer";
     private static String idName = "";
-    private VehicleInfo vehicleInfo;
-    private List<VehicleInfo> list;
+    private VehicleInfo vehicleInfo = new VehicleInfo();
+    private List<VehicleInfo> list = new ArrayList<>();
 
     @Before
     public void prepare(){
@@ -85,51 +81,74 @@ public class ESQueryServiceTest extends BaseTest {
             vehicle.setSaleBillNo("test-saleBillNo"+"-"+String.valueOf(i));
             list.add(vehicle);
         }
-        //单体数据
-        vehicleInfo.setId("001");
-        vehicleInfo.setGroupId("test-groupId"+"-"+"001");
-        vehicleInfo.setCusId("test-cusId"+"-"+"001");
-        vehicleInfo.setChangPai("test-changPai"+"-"+"001");
-        vehicleInfo.setCheXi("test-cheXi"+"-"+"001");
-        vehicleInfo.setCheXingDaiMa("test-cheXingDaiMa"+"-"+"001");
-        vehicleInfo.setCheJiaHao("test-cheJiaHao"+"-"+"001");
-        vehicleInfo.setFaDongJiHao("test-faDongJiHao"+"-"+"001");
-        vehicleInfo.setChePaiHao("test-chePaiHao"+"-"+"001");
-        vehicleInfo.setChePaiYanSe("test-chePaiYanSe"+"-"+"001");
-        vehicleInfo.setBianSuXiangHao("test-bianSuXiangHao"+"-"+"001");
-        vehicleInfo.setChanDi("test-chanDi"+"-"+"001");
-        vehicleInfo.setGouCheDate(new Date());
-        vehicleInfo.setBaoXianDate(new Date());
-        vehicleInfo.setZhiZaoDate(new Date());
-        vehicleInfo.setNeiShiYanSe("test-neiShiYanSe"+"-"+"001");
-        vehicleInfo.setShangJianDanHao("test-shangJianDanHao"+"-"+"001");
-        vehicleInfo.setHeGeZhengHao("test-heGeZhengHao"+"-"+"001");
-        vehicleInfo.setJinKouZhengHao("test-jinKouZhengHao"+"-"+"001");
-        vehicleInfo.setCheLiangGuiGe("test-cheLiangGuiGe"+"-"+"001");
-        vehicleInfo.setCheLiangSort("test-cheLiangSort"+"-"+"001");
-        vehicleInfo.setNextExaDate(new Date());
-        vehicleInfo.setIsZiDianSale("test-isZiDianSale"+"-"+"001");
-        vehicleInfo.setSaleName("test-saleName"+"-"+"001");
-        vehicleInfo.setSaleBillNo("test-saleBillNo"+"-"+"001");
+
     }
 
     @Test
-    public void testSave(){
+    public void testSingleSave(){
         try {
+            //单体数据
+            vehicleInfo.setId("003");
+            vehicleInfo.setGroupId("test-groupId"+"-"+"003");
+            vehicleInfo.setCusId("test-cusId"+"-"+"003");
+            vehicleInfo.setChangPai("test-changPai"+"-"+"003");
+            vehicleInfo.setCheXi("test-cheXi"+"-"+"003");
+            vehicleInfo.setCheXingDaiMa("test-cheXingDaiMa"+"-"+"003");
+            vehicleInfo.setCheJiaHao("test-cheJiaHao"+"-"+"003");
+            vehicleInfo.setFaDongJiHao("test-faDongJiHao"+"-"+"003");
+            vehicleInfo.setChePaiHao("test-chePaiHao"+"-"+"003");
+            vehicleInfo.setChePaiYanSe("test-chePaiYanSe"+"-"+"003");
+            vehicleInfo.setBianSuXiangHao("test-bianSuXiangHao"+"-"+"003");
+            vehicleInfo.setChanDi("test-chanDi"+"-"+"003");
+            vehicleInfo.setGouCheDate(new Date());
+            vehicleInfo.setBaoXianDate(new Date());
+            vehicleInfo.setZhiZaoDate(new Date());
+            vehicleInfo.setNeiShiYanSe("test-neiShiYanSe"+"-"+"003");
+            vehicleInfo.setShangJianDanHao("test-shangJianDanHao"+"-"+"003");
+            vehicleInfo.setHeGeZhengHao("test-heGeZhengHao"+"-"+"003");
+            vehicleInfo.setJinKouZhengHao("test-jinKouZhengHao"+"-"+"003");
+            vehicleInfo.setCheLiangGuiGe("test-cheLiangGuiGe"+"-"+"003");
+            vehicleInfo.setCheLiangSort("test-cheLiangSort"+"-"+"003");
+            vehicleInfo.setNextExaDate(new Date());
+            vehicleInfo.setIsZiDianSale("test-isZiDianSale"+"-"+"003");
+            vehicleInfo.setSaleName("test-saleName"+"-"+"003");
+            vehicleInfo.setSaleBillNo("test-saleBillNo"+"-"+"003");
+
             RestClient lowLevelRestClient = RestClient.builder(new HttpHost("192.168.1.50", 9200, "http")).build();
             RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
 
-            BulkRequest bulkRequest = new BulkRequest();
-            bulkRequest.add(new IndexRequest(index, driverType, "").source(JSON.toJSON(vehicleInfo), XContentType.JSON));
+            IndexRequest request = new IndexRequest(index, driverType, "");
 
-            IndexRequest request = new IndexRequest(index, driverType, "001")
-                    .source(JSON.toJSON(vehicleInfo), XContentType.JSON)
-                    .opType(DocWriteRequest.OpType.CREATE);
+            request.source("vehicle", JSON.toJSON(vehicleInfo));
+
             IndexResponse response = client.index(request);
+
             logger.info("======>IndexResponse:"+JSON.toJSONString(response));
         } catch (IOException e) {
             logger.error("testSave error {} ", e);
         }
+    }
+
+    @Test
+    public void testSingleDelete(){
+        try {
+            RestClient lowLevelRestClient = RestClient.builder(new HttpHost("192.168.1.50", 9200, "http")).build();
+            RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
+            DeleteRequest request = new DeleteRequest(index, driverType, "AV8JQqkgeAOg1SSRhtWK");
+            DeleteResponse deleteResponse = client.delete(request);
+            logger.info("==============>testSingleDelete:"+JSON.toJSONString(deleteResponse));
+        } catch (IOException e) {
+            logger.error("testSingleDelete error {} ", e);
+        }
+    }
+
+    @Test
+    public void testBatchSave(){
+        RestClient lowLevelRestClient = RestClient.builder(new HttpHost("192.168.1.50", 9200, "http")).build();
+        RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
+
+        BulkRequest bulkRequest = new BulkRequest();
+        bulkRequest.add(new IndexRequest(index, driverType, "").source(JSON.toJSON(vehicleInfo), XContentType.JSON));
     }
 
     @Test
