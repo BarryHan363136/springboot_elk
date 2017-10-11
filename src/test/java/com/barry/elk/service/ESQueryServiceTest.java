@@ -8,6 +8,7 @@ import org.elasticsearch.Build;
 import org.elasticsearch.Version;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetRequest;
@@ -51,7 +52,33 @@ public class ESQueryServiceTest {
 
     @Before
     public void prepare(){
-        //组合数据
+        //单体数据
+        vehicleInfo.setId("003");
+        vehicleInfo.setGroupId("test-groupId"+"-"+"003");
+        vehicleInfo.setCusId("test-cusId"+"-"+"003");
+        vehicleInfo.setChangPai("test-changPai"+"-"+"003");
+        vehicleInfo.setCheXi("test-cheXi"+"-"+"003");
+        vehicleInfo.setCheXingDaiMa("test-cheXingDaiMa"+"-"+"003");
+        vehicleInfo.setCheJiaHao("test-cheJiaHao"+"-"+"003");
+        vehicleInfo.setFaDongJiHao("test-faDongJiHao"+"-"+"003");
+        vehicleInfo.setChePaiHao("test-chePaiHao"+"-"+"003");
+        vehicleInfo.setChePaiYanSe("test-chePaiYanSe"+"-"+"003");
+        vehicleInfo.setBianSuXiangHao("test-bianSuXiangHao"+"-"+"003");
+        vehicleInfo.setChanDi("test-chanDi"+"-"+"003");
+        vehicleInfo.setGouCheDate(new Date());
+        vehicleInfo.setBaoXianDate(new Date());
+        vehicleInfo.setZhiZaoDate(new Date());
+        vehicleInfo.setNeiShiYanSe("test-neiShiYanSe"+"-"+"003");
+        vehicleInfo.setShangJianDanHao("test-shangJianDanHao"+"-"+"003");
+        vehicleInfo.setHeGeZhengHao("test-heGeZhengHao"+"-"+"003");
+        vehicleInfo.setJinKouZhengHao("test-jinKouZhengHao"+"-"+"003");
+        vehicleInfo.setCheLiangGuiGe("test-cheLiangGuiGe"+"-"+"003");
+        vehicleInfo.setCheLiangSort("test-cheLiangSort"+"-"+"003");
+        vehicleInfo.setNextExaDate(new Date());
+        vehicleInfo.setIsZiDianSale("test-isZiDianSale"+"-"+"003");
+        vehicleInfo.setSaleName("test-saleName"+"-"+"003");
+        vehicleInfo.setSaleBillNo("test-saleBillNo"+"-"+"003");
+        //集合数据
         for (int i=1;i<11;i++){
             VehicleInfo vehicle = new VehicleInfo();
             vehicle.setId(String.valueOf(i));
@@ -81,38 +108,12 @@ public class ESQueryServiceTest {
             vehicle.setSaleBillNo("test-saleBillNo"+"-"+String.valueOf(i));
             list.add(vehicle);
         }
-
     }
 
     @Test
     public void testSingleSave(){
         try {
-            //单体数据
-            vehicleInfo.setId("003");
-            vehicleInfo.setGroupId("test-groupId"+"-"+"003");
-            vehicleInfo.setCusId("test-cusId"+"-"+"003");
-            vehicleInfo.setChangPai("test-changPai"+"-"+"003");
-            vehicleInfo.setCheXi("test-cheXi"+"-"+"003");
-            vehicleInfo.setCheXingDaiMa("test-cheXingDaiMa"+"-"+"003");
-            vehicleInfo.setCheJiaHao("test-cheJiaHao"+"-"+"003");
-            vehicleInfo.setFaDongJiHao("test-faDongJiHao"+"-"+"003");
-            vehicleInfo.setChePaiHao("test-chePaiHao"+"-"+"003");
-            vehicleInfo.setChePaiYanSe("test-chePaiYanSe"+"-"+"003");
-            vehicleInfo.setBianSuXiangHao("test-bianSuXiangHao"+"-"+"003");
-            vehicleInfo.setChanDi("test-chanDi"+"-"+"003");
-            vehicleInfo.setGouCheDate(new Date());
-            vehicleInfo.setBaoXianDate(new Date());
-            vehicleInfo.setZhiZaoDate(new Date());
-            vehicleInfo.setNeiShiYanSe("test-neiShiYanSe"+"-"+"003");
-            vehicleInfo.setShangJianDanHao("test-shangJianDanHao"+"-"+"003");
-            vehicleInfo.setHeGeZhengHao("test-heGeZhengHao"+"-"+"003");
-            vehicleInfo.setJinKouZhengHao("test-jinKouZhengHao"+"-"+"003");
-            vehicleInfo.setCheLiangGuiGe("test-cheLiangGuiGe"+"-"+"003");
-            vehicleInfo.setCheLiangSort("test-cheLiangSort"+"-"+"003");
-            vehicleInfo.setNextExaDate(new Date());
-            vehicleInfo.setIsZiDianSale("test-isZiDianSale"+"-"+"003");
-            vehicleInfo.setSaleName("test-saleName"+"-"+"003");
-            vehicleInfo.setSaleBillNo("test-saleBillNo"+"-"+"003");
+
 
             RestClient lowLevelRestClient = RestClient.builder(new HttpHost("192.168.1.50", 9200, "http")).build();
             RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
@@ -134,7 +135,7 @@ public class ESQueryServiceTest {
         try {
             RestClient lowLevelRestClient = RestClient.builder(new HttpHost("192.168.1.50", 9200, "http")).build();
             RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
-            DeleteRequest request = new DeleteRequest(index, driverType, "001-003");
+            DeleteRequest request = new DeleteRequest(index, driverType, "AV8JYB_YeAOg1SSRhtWM");
             DeleteResponse deleteResponse = client.delete(request);
             logger.info("==============>testSingleDelete:"+JSON.toJSONString(deleteResponse));
         } catch (IOException e) {
@@ -144,11 +145,20 @@ public class ESQueryServiceTest {
 
     @Test
     public void testBatchSave(){
-        RestClient lowLevelRestClient = RestClient.builder(new HttpHost("192.168.1.50", 9200, "http")).build();
-        RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
+        try {
+            RestClient lowLevelRestClient = RestClient.builder(new HttpHost("192.168.1.50", 9200, "http")).build();
+            RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
 
-        BulkRequest bulkRequest = new BulkRequest();
-        bulkRequest.add(new IndexRequest(index, driverType, "").source(JSON.toJSON(vehicleInfo), XContentType.JSON));
+            BulkRequest bulkRequest = new BulkRequest();
+            for (VehicleInfo vehicle : list){
+                IndexRequest indexRequest = new IndexRequest(index, driverType, "").source("vehicle", JSON.toJSON(vehicle));
+                bulkRequest.add(indexRequest);
+            }
+            BulkResponse bulkResponse = client.bulk(bulkRequest);
+            logger.info("=============>bulkResponse:"+JSON.toJSONString(bulkResponse));
+        } catch (IOException e) {
+            logger.error("testBatchSave error {} ", e);
+        }
     }
 
     @Test
