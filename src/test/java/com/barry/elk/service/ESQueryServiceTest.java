@@ -14,18 +14,28 @@ import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.main.MainResponse;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.cluster.ClusterName;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
+import static java.awt.SystemColor.info;
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 
 /**
  * ES API接口测试
@@ -41,7 +51,7 @@ public class ESQueryServiceTest {
     private static final String ip = "192.168.1.50";
     private static final Integer port = 9003;
     private static String index = "driver_service";
-    private static String driverType = "vehicle";
+    private static String driverType = "vehicle_condition";
     private static String customerType = "customer";
     private static String idName = "";
     private VehicleInfo vehicleInfo = new VehicleInfo();
@@ -115,7 +125,7 @@ public class ESQueryServiceTest {
 
             IndexRequest request = new IndexRequest(index, driverType, "");
 
-            request.source("vehicle", JSON.toJSON(vehicleInfo));
+            request.source("vehicle", JSON.toJSON(vehicleInfo));//JSON.toJSON(vehicleInfo)
 
             IndexResponse response = client.index(request);
 
@@ -130,7 +140,7 @@ public class ESQueryServiceTest {
         try {
             RestClient lowLevelRestClient = RestClient.builder(new HttpHost("192.168.1.50", 9200, "http")).build();
             RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
-            DeleteRequest request = new DeleteRequest(index, driverType, "AV8Kj_NNeAOg1SSRhtWX");
+            DeleteRequest request = new DeleteRequest(index, driverType, "AV8KrffFeAOg1SSRhtWl");
             DeleteResponse deleteResponse = client.delete(request);
             logger.info("==============>testSingleDelete:"+JSON.toJSONString(deleteResponse));
         } catch (IOException e) {
@@ -162,13 +172,28 @@ public class ESQueryServiceTest {
             RestClient lowLevelRestClient = RestClient.builder(new HttpHost("192.168.1.50", 9200, "http")).build();
             RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
 
-            String index = "springboot";
-            String type = "springboot";
-            String id = "AV7Mnhrbvm1IeJsqdGbp";
-            GetRequest getRequest = new GetRequest(index, type, id);
-            GetResponse getResponse = client.get(getRequest);
-            logger.info("==============>"+ JSON.toJSONString(getRequest));
-        } catch (IOException e) {
+            SearchRequest searchRequest = new SearchRequest(index);
+            SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+            searchSourceBuilder.query(QueryBuilders.matchAllQuery());
+
+            SearchResponse searchResponse = client.search(searchRequest);
+            logger.info("============>searchResponse:"+JSON.toJSONString(searchResponse));
+            if (searchResponse!=null){
+                SearchHits hits = searchResponse.getHits();
+                if (hits!=null){
+                    Iterator it = hits.iterator();
+                    while (it.hasNext()){
+                        SearchHit hit = (SearchHit) it.next();
+                        //logger.info("======================>jsonstring:"+hit.getSourceAsString());
+                        com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(hit.getSourceAsString());
+                        VehicleInfo info = JSON.parseObject(jsonObject.get("vehicle").toString(), VehicleInfo.class);
+                        if (info!=null){
+                            logger.info("==================>chePaiYanSe:"+info.getChePaiYanSe());
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
             logger.error("testSelect error {} ", e);
         }
     }
