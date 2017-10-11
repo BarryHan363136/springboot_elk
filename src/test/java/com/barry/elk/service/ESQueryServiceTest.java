@@ -113,8 +113,6 @@ public class ESQueryServiceTest {
     @Test
     public void testSingleSave(){
         try {
-
-
             RestClient lowLevelRestClient = RestClient.builder(new HttpHost("192.168.1.50", 9200, "http")).build();
             RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
 
