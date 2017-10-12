@@ -257,7 +257,7 @@ public class ESQueryServiceTest {
             searchRequest.searchType(SearchType.DFS_QUERY_THEN_FETCH);
 
             SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-            sourceBuilder.query(QueryBuilders.termQuery("vehicle_condition.chePaiYanSe.keyword", "test-chePaiYanSe-8"));
+            sourceBuilder.query(QueryBuilders.termQuery("chePaiYanSe", "test-chePaiYanSe-8"));
             sourceBuilder.from(0);
             sourceBuilder.size(5);
             sourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
