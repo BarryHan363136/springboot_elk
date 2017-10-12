@@ -14,6 +14,7 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.main.MainResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.cluster.ClusterName;
@@ -22,9 +23,14 @@ import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.SpanQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.suggest.SuggestBuilder;
+import org.elasticsearch.search.suggest.SuggestBuilders;
+import org.elasticsearch.search.suggest.SuggestionBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -152,15 +158,15 @@ public class ESQueryServiceTest {
             RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
 
             IndexRequest request = new IndexRequest(index, driverType, "");
-
+            //request.source("vehicle", JSON.toJSONString(vehicleInfo));
             request.source(JSON.toJSONString(vehicleInfo), XContentType.JSON);
 
-            IndexResponse response = client.index(request);
+        IndexResponse response = client.index(request);
 
-            logger.info("======>IndexResponse:"+JSON.toJSONString(response));
-        } catch (IOException e) {
-            logger.error("testSave error {} ", e);
-        }
+        logger.info("======>IndexResponse:"+JSON.toJSONString(response));
+    } catch (IOException e) {
+        logger.error("testSave error {} ", e);
+    }
     }
 
     /**
@@ -238,6 +244,7 @@ public class ESQueryServiceTest {
 
     /**
      * ES High Level API 复杂查询,设置查询条件但不做分页查询
+     * vehicle_condition.chanDi---QueryBuilders.matchQuery("chanDi", "test-chanDi-6")
      * */
     @Test
     public void testComplexQuery(){
@@ -247,15 +254,13 @@ public class ESQueryServiceTest {
 
             SearchRequest searchRequest = new SearchRequest(index);
             searchRequest.types(driverType);
+            searchRequest.searchType(SearchType.DFS_QUERY_THEN_FETCH);
 
             SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-            //vehicle_condition.bianSuXiangHao.keyword
-//            sourceBuilder.query(QueryBuilders.termQuery("vehicle_condition.chanDi", "test-chanDi-6"));
-//            sourceBuilder.from(0);
-//            sourceBuilder.size(5);
-//            sourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
-            QueryBuilder matchQueryBuilder = QueryBuilders.matchQuery("chanDi", "test-chanDi-6");
-            sourceBuilder.query(matchQueryBuilder);
+            sourceBuilder.query(QueryBuilders.termQuery("vehicle_condition.chePaiYanSe.keyword", "test-chePaiYanSe-8"));
+            sourceBuilder.from(0);
+            sourceBuilder.size(5);
+            sourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
             searchRequest.source(sourceBuilder);
             SearchResponse searchResponse = client.search(searchRequest);
             logger.info("====testComplexQuery========>searchResponse:"+JSON.toJSONString(searchResponse));
