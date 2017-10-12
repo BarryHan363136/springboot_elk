@@ -9,8 +9,6 @@ import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
-import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.main.MainResponse;
@@ -19,13 +17,14 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.cluster.ClusterName;
+import org.elasticsearch.common.unit.Fuzziness;
+import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -33,9 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
-
-import static java.awt.SystemColor.info;
-import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
+import java.util.concurrent.TimeUnit;
 
 /**
  * ES API接口测试
@@ -57,6 +54,9 @@ public class ESQueryServiceTest {
     private VehicleInfo vehicleInfo = new VehicleInfo();
     private List<VehicleInfo> list = new ArrayList<>();
 
+    /**
+     * 初始化数据
+     * */
     @Before
     public void prepare(){
         //单体数据
@@ -117,6 +117,34 @@ public class ESQueryServiceTest {
         }
     }
 
+    /**
+     * ES High Level API Info API
+     * */
+    @Test
+    public void testInfoApi(){
+        try {
+            RestClient lowLevelRestClient = RestClient.builder(new HttpHost("192.168.1.50", 9200, "http")).build();
+            RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
+            MainResponse response = client.info();
+            logger.info("============>response:"+JSON.toJSONString(response));
+            ClusterName clusterName = response.getClusterName();
+            logger.info("============>clusterName:"+JSON.toJSONString(clusterName));
+            String clusterUuid = response.getClusterUuid();
+            logger.info("============>clusterUuid:"+clusterUuid);
+            String nodeName = response.getNodeName();
+            logger.info("============>nodeName:"+nodeName);
+            Version version = response.getVersion();
+            logger.info("============>version:"+JSON.toJSONString(version));
+            Build build = response.getBuild();
+            logger.info("============>build:"+JSON.toJSONString(build));
+        } catch (IOException e) {
+            logger.error("testInfoApi error {} ", e);
+        }
+    }
+
+    /**
+     * ES High Level API 单条数据新增
+     * */
     @Test
     public void testSingleSave(){
         try {
@@ -125,7 +153,7 @@ public class ESQueryServiceTest {
 
             IndexRequest request = new IndexRequest(index, driverType, "");
 
-            request.source("vehicle", JSON.toJSON(vehicleInfo));//JSON.toJSON(vehicleInfo)
+            request.source(JSON.toJSONString(vehicleInfo), XContentType.JSON);
 
             IndexResponse response = client.index(request);
 
@@ -135,12 +163,15 @@ public class ESQueryServiceTest {
         }
     }
 
+    /**
+     * ES High Level API 单条数据删除
+     * */
     @Test
     public void testSingleDelete(){
         try {
             RestClient lowLevelRestClient = RestClient.builder(new HttpHost("192.168.1.50", 9200, "http")).build();
             RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
-            DeleteRequest request = new DeleteRequest(index, driverType, "AV8KrffFeAOg1SSRhtWl");
+            DeleteRequest request = new DeleteRequest(index, driverType, "AV8OobTknYAZrDL3t4ED");
             DeleteResponse deleteResponse = client.delete(request);
             logger.info("==============>testSingleDelete:"+JSON.toJSONString(deleteResponse));
         } catch (IOException e) {
@@ -148,6 +179,9 @@ public class ESQueryServiceTest {
         }
     }
 
+    /**
+     * ES High Level API 批量新增数据
+     * */
     @Test
     public void testBatchSave(){
         try {
@@ -156,7 +190,8 @@ public class ESQueryServiceTest {
 
             BulkRequest bulkRequest = new BulkRequest();
             for (VehicleInfo vehicle : list){
-                IndexRequest indexRequest = new IndexRequest(index, driverType, "").source("vehicle", JSON.toJSON(vehicle));
+                IndexRequest indexRequest = new IndexRequest(index, driverType, "").
+                        source(JSON.toJSONString(vehicle), XContentType.JSON);
                 bulkRequest.add(indexRequest);
             }
             BulkResponse bulkResponse = client.bulk(bulkRequest);
@@ -166,8 +201,11 @@ public class ESQueryServiceTest {
         }
     }
 
+    /**
+     * ES High Level API 不加查询条件,检索出所有数据
+     * */
     @Test
-    public void testSelect(){
+    public void testSimpleQuery (){
         try {
             RestClient lowLevelRestClient = RestClient.builder(new HttpHost("192.168.1.50", 9200, "http")).build();
             RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
@@ -198,26 +236,34 @@ public class ESQueryServiceTest {
         }
     }
 
+    /**
+     * ES High Level API 复杂查询,设置查询条件但不做分页查询
+     * */
     @Test
-    public void testInfoApi(){
+    public void testComplexQuery(){
         try {
             RestClient lowLevelRestClient = RestClient.builder(new HttpHost("192.168.1.50", 9200, "http")).build();
             RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
-            MainResponse response = client.info();
-            logger.info("============>response:"+JSON.toJSONString(response));
-            ClusterName clusterName = response.getClusterName();
-            logger.info("============>clusterName:"+JSON.toJSONString(clusterName));
-            String clusterUuid = response.getClusterUuid();
-            logger.info("============>clusterUuid:"+clusterUuid);
-            String nodeName = response.getNodeName();
-            logger.info("============>nodeName:"+nodeName);
-            Version version = response.getVersion();
-            logger.info("============>version:"+JSON.toJSONString(version));
-            Build build = response.getBuild();
-            logger.info("============>build:"+JSON.toJSONString(build));
-        } catch (IOException e) {
-            logger.error("testInfoApi error {} ", e);
+
+            SearchRequest searchRequest = new SearchRequest(index);
+            searchRequest.types(driverType);
+
+            SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+            //vehicle_condition.bianSuXiangHao.keyword
+//            sourceBuilder.query(QueryBuilders.termQuery("vehicle_condition.chanDi", "test-chanDi-6"));
+//            sourceBuilder.from(0);
+//            sourceBuilder.size(5);
+//            sourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
+            QueryBuilder matchQueryBuilder = QueryBuilders.matchQuery("chanDi", "test-chanDi-6");
+            sourceBuilder.query(matchQueryBuilder);
+            searchRequest.source(sourceBuilder);
+            SearchResponse searchResponse = client.search(searchRequest);
+            logger.info("====testComplexQuery========>searchResponse:"+JSON.toJSONString(searchResponse));
+        } catch (Exception e) {
+            logger.error("testSelect error {} ", e);
         }
     }
+
+
 
 }
