@@ -9,6 +9,10 @@ public class VehicleInfo implements Serializable {
 
     private String id;
 
+    private Integer serialNo;
+
+    private String level;
+
     /** boss 系统公司编号 */
     private String groupId;
 
@@ -279,6 +283,22 @@ public class VehicleInfo implements Serializable {
 
     public void setSaleBillNo(String saleBillNo) {
         this.saleBillNo = saleBillNo;
+    }
+
+    public Integer getSerialNo() {
+        return serialNo;
+    }
+
+    public void setSerialNo(Integer serialNo) {
+        this.serialNo = serialNo;
+    }
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
     }
 
 }

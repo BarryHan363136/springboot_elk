@@ -29,6 +29,9 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.ScoreSortBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.search.suggest.SuggestBuilder;
 import org.elasticsearch.search.suggest.SuggestBuilders;
 import org.elasticsearch.search.suggest.SuggestionBuilder;
@@ -68,6 +71,8 @@ public class ESQueryServiceTest {
     public void prepare(){
         //单体数据
         vehicleInfo.setId("003");
+        vehicleInfo.setSerialNo(3);
+        vehicleInfo.setLevel("003");
         vehicleInfo.setGroupId("test-groupId"+"-"+"003");
         vehicleInfo.setCusId("test-cusId"+"-"+"003");
         vehicleInfo.setChangPai("test-changPai"+"-"+"003");
@@ -96,6 +101,8 @@ public class ESQueryServiceTest {
         for (int i=1;i<11;i++){
             VehicleInfo vehicle = new VehicleInfo();
             vehicle.setId(String.valueOf(i));
+            vehicle.setSerialNo(i);
+            vehicle.setLevel(i+"");
             vehicle.setGroupId("test-groupId"+"-"+String.valueOf(i));
             vehicle.setCusId("test-cusId"+"-"+String.valueOf(i));
             vehicle.setChangPai("test-changPai"+"-"+String.valueOf(i));
@@ -178,7 +185,7 @@ public class ESQueryServiceTest {
         try {
             RestClient lowLevelRestClient = RestClient.builder(new HttpHost(ip, port, "http")).build();
             RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
-            DeleteRequest request = new DeleteRequest(index, driverType, "AV8kL6MM-FOCCCzR2T4V");
+            DeleteRequest request = new DeleteRequest(index, driverType, "AV8kQNQ4-FOCCCzR2T4Y");
             DeleteResponse deleteResponse = client.delete(request);
             logger.info("==============>testSingleDelete:"+JSON.toJSONString(deleteResponse));
         } catch (IOException e) {
@@ -221,6 +228,12 @@ public class ESQueryServiceTest {
             SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
             searchSourceBuilder.query(QueryBuilders.matchAllQuery());
 
+            searchSourceBuilder.from(0);
+            searchSourceBuilder.size(4);//分页
+            searchSourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
+            //searchSourceBuilder.sort(new ScoreSortBuilder().order(SortOrder.DESC));//排序
+            searchSourceBuilder.sort("serialNo", SortOrder.ASC);
+            searchRequest.source(searchSourceBuilder);
             SearchResponse searchResponse = client.search(searchRequest);
             logger.info("============>searchResponse:"+JSON.toJSONString(searchResponse));
             if (searchResponse!=null){
@@ -232,7 +245,7 @@ public class ESQueryServiceTest {
                         //logger.info("======================>jsonstring:"+hit.getSourceAsString());
                         VehicleInfo info = JSON.parseObject(hit.getSourceAsString(), VehicleInfo.class);
                         if (info!=null){
-                            logger.info("==================>chePaiYanSe:"+info.getChePaiYanSe());
+                            logger.info("==================>id:"+info.getId());
                         }
                     }
                 }
