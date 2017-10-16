@@ -1,6 +1,7 @@
 package com.barry.elk.service;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.barry.elk.vo.business.VehicleInfo;
 import org.apache.http.HttpHost;
 import org.elasticsearch.Build;
@@ -177,7 +178,7 @@ public class ESQueryServiceTest {
         try {
             RestClient lowLevelRestClient = RestClient.builder(new HttpHost(ip, port, "http")).build();
             RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
-            DeleteRequest request = new DeleteRequest(index, driverType, "AV8OobTknYAZrDL3t4ED");
+            DeleteRequest request = new DeleteRequest(index, driverType, "AV8kL6MM-FOCCCzR2T4V");
             DeleteResponse deleteResponse = client.delete(request);
             logger.info("==============>testSingleDelete:"+JSON.toJSONString(deleteResponse));
         } catch (IOException e) {
@@ -229,8 +230,7 @@ public class ESQueryServiceTest {
                     while (it.hasNext()){
                         SearchHit hit = (SearchHit) it.next();
                         //logger.info("======================>jsonstring:"+hit.getSourceAsString());
-                        com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(hit.getSourceAsString());
-                        VehicleInfo info = JSON.parseObject(jsonObject.get("vehicle").toString(), VehicleInfo.class);
+                        VehicleInfo info = JSON.parseObject(hit.getSourceAsString(), VehicleInfo.class);
                         if (info!=null){
                             logger.info("==================>chePaiYanSe:"+info.getChePaiYanSe());
                         }
@@ -257,13 +257,26 @@ public class ESQueryServiceTest {
             searchRequest.searchType(SearchType.DFS_QUERY_THEN_FETCH);
 
             SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-            sourceBuilder.query(QueryBuilders.termQuery("chePaiYanSe", "test-chePaiYanSe-8"));
+            sourceBuilder.query(QueryBuilders.matchPhraseQuery("changPai", "test-changPai-6"));
             sourceBuilder.from(0);
             sourceBuilder.size(5);
             sourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
             searchRequest.source(sourceBuilder);
             SearchResponse searchResponse = client.search(searchRequest);
             logger.info("====testComplexQuery========>searchResponse:"+JSON.toJSONString(searchResponse));
+            if (searchResponse!=null){
+                SearchHits hits = searchResponse.getHits();
+                if (hits!=null){
+                    Iterator it = hits.iterator();
+                    while (it.hasNext()){
+                        SearchHit hit = (SearchHit) it.next();
+                        VehicleInfo info = JSON.parseObject(hit.getSourceAsString(), VehicleInfo.class);
+                        if (info!=null){
+                            logger.info("==================>changPai:"+info.getChangPai());
+                        }
+                    }
+                }
+            }
         } catch (Exception e) {
             logger.error("testSelect error {} ", e);
         }
