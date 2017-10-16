@@ -51,8 +51,8 @@ public class ESQueryServiceTest {
 
     private static final Logger logger = LoggerFactory.getLogger(ESQueryServiceTest.class);
 
-    private static final String ip = "192.168.1.50";
-    private static final Integer port = 9003;
+    private static final String ip = "172.16.119.128";
+    private static final Integer port = 9200;
     private static String index = "driver_service";
     private static String driverType = "vehicle_condition";
     private static String customerType = "customer";
@@ -129,7 +129,7 @@ public class ESQueryServiceTest {
     @Test
     public void testInfoApi(){
         try {
-            RestClient lowLevelRestClient = RestClient.builder(new HttpHost("192.168.1.50", 9200, "http")).build();
+            RestClient lowLevelRestClient = RestClient.builder(new HttpHost(ip, port, "http")).build();
             RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
             MainResponse response = client.info();
             logger.info("============>response:"+JSON.toJSONString(response));
@@ -154,7 +154,7 @@ public class ESQueryServiceTest {
     @Test
     public void testSingleSave(){
         try {
-            RestClient lowLevelRestClient = RestClient.builder(new HttpHost("192.168.1.50", 9200, "http")).build();
+            RestClient lowLevelRestClient = RestClient.builder(new HttpHost(ip, port, "http")).build();
             RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
 
             IndexRequest request = new IndexRequest(index, driverType, "");
@@ -175,7 +175,7 @@ public class ESQueryServiceTest {
     @Test
     public void testSingleDelete(){
         try {
-            RestClient lowLevelRestClient = RestClient.builder(new HttpHost("192.168.1.50", 9200, "http")).build();
+            RestClient lowLevelRestClient = RestClient.builder(new HttpHost(ip, port, "http")).build();
             RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
             DeleteRequest request = new DeleteRequest(index, driverType, "AV8OobTknYAZrDL3t4ED");
             DeleteResponse deleteResponse = client.delete(request);
@@ -191,7 +191,7 @@ public class ESQueryServiceTest {
     @Test
     public void testBatchSave(){
         try {
-            RestClient lowLevelRestClient = RestClient.builder(new HttpHost("192.168.1.50", 9200, "http")).build();
+            RestClient lowLevelRestClient = RestClient.builder(new HttpHost(ip, port, "http")).build();
             RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
 
             BulkRequest bulkRequest = new BulkRequest();
@@ -213,7 +213,7 @@ public class ESQueryServiceTest {
     @Test
     public void testSimpleQuery (){
         try {
-            RestClient lowLevelRestClient = RestClient.builder(new HttpHost("192.168.1.50", 9200, "http")).build();
+            RestClient lowLevelRestClient = RestClient.builder(new HttpHost(ip, port, "http")).build();
             RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
 
             SearchRequest searchRequest = new SearchRequest(index);
@@ -249,7 +249,7 @@ public class ESQueryServiceTest {
     @Test
     public void testComplexQuery(){
         try {
-            RestClient lowLevelRestClient = RestClient.builder(new HttpHost("192.168.1.50", 9200, "http")).build();
+            RestClient lowLevelRestClient = RestClient.builder(new HttpHost(ip, port, "http")).build();
             RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
 
             SearchRequest searchRequest = new SearchRequest(index);
