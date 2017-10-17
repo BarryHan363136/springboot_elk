@@ -2,6 +2,8 @@ package com.barry.elk.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.barry.elk.base.BaseTest;
+import com.barry.elk.config.ESProperties;
 import com.barry.elk.vo.business.VehicleInfo;
 import org.apache.http.HttpHost;
 import org.elasticsearch.Build;
@@ -39,6 +41,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.*;
@@ -51,9 +54,12 @@ import java.util.concurrent.TimeUnit;
  * @create: 2017/10/10 14:52
  * desc:
  */
-public class ESQueryServiceTest {
+public class ESQueryServiceTest extends BaseTest{
 
     private static final Logger logger = LoggerFactory.getLogger(ESQueryServiceTest.class);
+
+    @Autowired
+    private ESProperties esProperties;
 
     private static final String ip = "172.16.119.128";
     private static final Integer port = 9200;
@@ -295,6 +301,12 @@ public class ESQueryServiceTest {
         }
     }
 
-
+    @Test
+    public void testGetProperties(){
+        logger.info("===========>ClusterName:"+esProperties.getClusterName());
+        logger.info("===========>NodeName:"+esProperties.getNodeName());
+        logger.info("===========>ServerIp:"+esProperties.getServerIp());
+        logger.info("===========>ServerPort:"+esProperties.getServerPort());
+    }
 
 }
